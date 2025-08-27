@@ -1,0 +1,5 @@
+body{font-family:Arial;padding:10px;background:#fff8e6}
+h1{font-size:18px;margin:0 0 6px}
+input,select,button{display:block;width:100%;padding:8px;margin:8px 0}
+.ticket{border:1px solid #ccc;padding:8px;margin:6px 0}
+.total{font-weight:bold;margin-top:10px}

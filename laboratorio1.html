@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TodoTi</title>
+  <link rel="stylesheet" href="laboratorio1.css">
+</head>
+<body>
+  <h1>todoTicket</h1>
+  <p>Hecho por alguien que apenas sabe qué es un array.</p>
+
+  <label>Evento</label>
+  <select id="eventSelect"></select>
+
+  <label>Cantidad</label>
+  <input id="qty" type="number" min="1" value="1">
+
+  <button id="genBtn">Generar tickets</button>
+  <button id="clearBtn">Limpiar</button>
+
+  <div id="ticketsArea"></div>
+  <div id="totalArea" class="total">Total: Q0.00</div>
+
+  <script>
+const events = [
+  {id:1,name:'Concierto A',place:'Parque',adult:100,child:50},
+  {id:2,name:'Obra B',place:'Teatro',adult:60,child:30}
+];
+
+const sel = document.getElementById('eventSelect');
+events.forEach(ev => {
+  const o = document.createElement('option');
+  o.value = ev.id; o.text = ev.name + ' - ' + ev.place;
+  sel.appendChild(o);
+});
+
+const area = document.getElementById('ticketsArea');
+const totalArea = document.getElementById('totalArea');
+
+document.getElementById('genBtn').addEventListener('click', () => {
+  const q = Number(document.getElementById('qty').value) || 0;
+  if (q < 1) { alert('Cantidad inválida'); return; }
+  const ev = events.find(e => e.id == sel.value);
+  if (!ev) { alert('Evento no encontrado'); return; }
+
+  area.innerHTML = '';
+  for (let i = 1; i <= q; i++) {
+    area.insertAdjacentHTML('beforeend',
+      `<div class="ticket">
+         <strong>Ticket #${i}</strong>
+         <div>Evento: ${ev.name}</div>
+         <div>Locación: ${ev.place}</div>
+         <div style="margin-top:6px">
+           <select data-adult="${ev.adult}" data-child="${ev.child}">
+             <option value="adult">Adulto</option>
+             <option value="child">Niño</option>
+           </select>
+           <span style="margin-left:8px;font-weight:600"> Q${ev.adult.toFixed(2)}</span>
+         </div>
+       </div>`
+    );
+  }
+  calcTotal();
+});
+
+// un solo listener para cambios en cualquiera de los selects dentro del área
+area.addEventListener('change', e => {
+  if (e.target.tagName !== 'SELECT') return;
+  const s = e.target;
+  const priceSpan = s.nextElementSibling;
+  priceSpan.textContent = ' Q' + Number(s.dataset[s.value === 'adult' ? 'adult' : 'child']).toFixed(2);
+  calcTotal();
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  area.innerHTML = '';
+  totalArea.textContent = 'Total: Q0.00';
+  document.getElementById('qty').value = 1;
+});
+
+function calcTotal() {
+  const sum = Array.from(area.querySelectorAll('select'))
+    .reduce((acc, s) => acc + Number(s.dataset[s.value === 'adult' ? 'adult' : 'child']), 0);
+  totalArea.textContent = 'Total: Q' + sum.toFixed(2);
+}
+</script>
