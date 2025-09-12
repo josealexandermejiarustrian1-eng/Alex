@@ -1,66 +1,33 @@
-const lsKey = 'iggs_simple';
-let pacientes = JSON.parse(localStorage.getItem(lsKey) || '[]');
+var pacientes = [];
+var form = document.getElementById('form');
+var nombre = document.getElementById('nombre');
+var idPaciente = document.getElementById('idPaciente');
+var telefono = document.getElementById('telefono');
+var alergias = document.getElementById('alergias');
+var notas = document.getElementById('notas');
+var lista = document.getElementById('lista');
+var btnVer = document.getElementById('ver');
+var btnLimpiar = document.getElementById('limpiar');
 
-const form = document.getElementById('form'),
-      lista = document.getElementById('lista'),
-      limpiar = document.getElementById('limpiar'),
-      verGuardados = document.getElementById('verGuardados');
-
-function guardarLS(){ localStorage.setItem(lsKey, JSON.stringify(pacientes)); }
-
-function leerFicha(){
-  return {
-    id: document.getElementById('idPaciente').value.trim() || 'p' + Date.now(),
-    nombre: document.getElementById('nombre').value.trim(),
-    telefono: document.getElementById('telefono').value.trim(),
-    alergias: document.getElementById('alergias').value.split(',').map(s=>s.trim()).filter(Boolean),
-    notas: document.getElementById('notas').value.trim(),
-    fecha: new Date().toLocaleDateString()
-  };
-}
-
-function render(){
-  lista.innerHTML = '';
-  pacientes.forEach(p=>{
-    const li = document.createElement('li');
-    li.className = 'list-group-item d-flex justify-content-between align-items-center';
-    li.innerHTML = `<div><strong>${p.nombre}</strong><br><small>${p.id}</small></div>
-      <div>
-        <button class="btn btn-sm btn-info me-1" onclick='view("${p.id}")'>Ver</button>
-        <button class="btn btn-sm btn-danger" onclick='del("${p.id}")'>Borrar</button>
-      </div>`;
-    lista.appendChild(li);
-  });
-}
-
-window.view = id => {
-  const p = pacientes.find(x=>x.id===id);
-  if(!p) return alert('No encontrado');
-  alert(`Nombre: ${p.nombre}\nID: ${p.id}\nTel: ${p.telefono||'-'}\nAlergias: ${(p.alergias.join(', ')||'-')}\nNotas: ${p.notas||'-'}\nFecha: ${p.fecha}`);
-};
-
-window.del = id => {
-  if(!confirm('Eliminar ficha?')) return;
-  pacientes = pacientes.filter(x=>x.id!==id);
-  guardarLS(); render();
-};
-
-form.addEventListener('submit', e=>{
+form.addEventListener('submit', function(e){
   e.preventDefault();
-  const f = leerFicha();
-  if(!f.nombre) return alert('Ingrese nombre');
-  const idx = pacientes.findIndex(x=>x.id===f.id);
-  if(idx >= 0) pacientes[idx] = f; else pacientes.unshift(f);
-  guardarLS(); render(); form.reset();
+  var n = nombre.value.trim();
+  if(!n){ alert('Escribe nombre'); return; }
+  pacientes.push({ nombre: n, id: idPaciente.value.trim(), telefono: telefono.value.trim(), alergias: alergias.value.trim(), notas: notas.value.trim() });
+  form.reset();
+  alert('Guardado');
 });
 
-limpiar.addEventListener('click', ()=> form.reset());
-
-verGuardados.addEventListener('click', ()=>{
-  if(pacientes.length===0) return alert('No hay pacientes guardados.');
-  let texto = pacientes.map((p,i)=>`${i+1}. ${p.nombre} (${p.id}) — ${p.telefono||'-'}`).join('\n');
-  alert(texto);
+btnVer.addEventListener('click', function(){
+  if(lista.innerHTML){ lista.innerHTML = ''; this.textContent = 'Ver guardados'; return; }
+  var html = '';
+  if(pacientes.length === 0) html = '<li class="list-group-item">No hay fichas.</li>';
+  for(var i=0;i<pacientes.length;i++){
+    var p = pacientes[i];
+    html += '<li class="list-group-item"><strong>'+p.nombre+'</strong><br>Tel: '+(p.telefono||'-')+' | Alergias: '+(p.alergias||'-')+'</li>';
+  }
+  lista.innerHTML = html;
+  this.textContent = 'Ocultar guardados';
 });
 
-// inicial
-render();
+btnLimpiar.addEventListener('click', function(){ form.reset(); });
