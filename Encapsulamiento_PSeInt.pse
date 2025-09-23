@@ -1,0 +1,132 @@
+Algoritmo Encapsulamiento_PSeInt
+// 10 ejemplos cortos de "encapsulamiento" (simulado) en un solo archivo.
+// Pega todo esto en PSeInt y ejecútalo.
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 1: "privado" con getter/setter (convención)
+Definir __valor1 Como Entero
+__valor1 <- 0
+Funcion get_valor1()
+    get_valor1 <- __valor1
+FinFuncion
+Procedimiento set_valor1(v)
+    __valor1 <- v
+FinProcedimiento
+Escribir "Ej1 get:", get_valor1()
+set_valor1(5)
+Escribir "Ej1 get despues:", get_valor1()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 2: nombre con doble guion bajo por convención
+Definir __secreto2 Como Cadena
+__secreto2 <- "no lo mires"
+Funcion mostrar2()
+    mostrar2 <- __secreto2
+FinFuncion
+Escribir "Ej2:", mostrar2()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 3: "propiedad" con getter y setter simples
+Definir _x3 Como Entero
+_x3 <- 1
+Funcion get_x3()
+    get_x3 <- _x3
+FinFuncion
+Procedimiento set_x3(v)
+    _x3 <- v
+FinProcedimiento
+set_x3(10)
+Escribir "Ej3:", get_x3()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 4: propiedad solo lectura (solo getter)
+Definir _n4 Como Entero
+_n4 <- 42
+Funcion get_n4()
+    get_n4 <- _n4
+FinFuncion
+Escribir "Ej4 (solo lectura):", get_n4()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 5: "protegido" por convención y acceso desde "subclase" (simulado)
+Definir _protegido5 Como Cadena
+_protegido5 <- "uso interno"
+-- simulamos una funcion de la "subclase" que accede
+Funcion ver_desde_subclase5()
+    ver_desde_subclase5 <- _protegido5
+FinFuncion
+Escribir "Ej5:", ver_desde_subclase5()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 6: encapsulado con cierre simulado (estado privado)
+Definir cuenta6 Como Entero
+cuenta6 <- 0
+Funcion incrementar6()
+    cuenta6 <- cuenta6 + 1
+    incrementar6 <- cuenta6
+FinFuncion
+Funcion ver6()
+    ver6 <- cuenta6
+FinFuncion
+incrementar6()
+incrementar6()
+Escribir "Ej6 contador:", ver6()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 7: "método privado" por convención
+Definir dato7 Como Cadena
+dato7 <- "visible"
+Funcion __metodo_privado7()
+    __metodo_privado7 <- "soy privado"
+FinFuncion
+Funcion llamar_privado7()
+    llamar_privado7 <- __metodo_privado7()
+FinFuncion
+Escribir "Ej7:", llamar_privado7()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 8: setter con validación
+Definir _edad8 Como Entero
+_edad8 <- 0
+Funcion get_edad8()
+    get_edad8 <- _edad8
+FinFuncion
+Procedimiento set_edad8(v)
+    Si v < 0 Entonces
+        Escribir "Ej8: Error - edad no puede ser negativa"
+    Sino
+        _edad8 <- v
+    FinSi
+FinProcedimiento
+set_edad8(-1)  // prueba error
+set_edad8(25)
+Escribir "Ej8 edad:", get_edad8()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 9: variable "privada" de módulo (compartida) con acceso controlado
+Definir __total9 Como Entero
+__total9 <- 0
+Procedimiento crear9()
+    __total9 <- __total9 + 1
+FinProcedimiento
+Funcion total9()
+    total9 <- __total9
+FinFuncion
+crear9()
+crear9()
+Escribir "Ej9 total:", total9()
+
+///////////////////////////////////////////////////////////////////////
+// Ejemplo 10: composición (registro/objeto "privado" dentro de otro)
+Tipo Motor10
+    pot Como Entero
+FinTipo
+Definir motor10 Como Motor10
+motor10.pot <- 120  // tratado como campo interno "privado"
+Funcion ver_pot10()
+    ver_pot10 <- motor10.pot
+FinFuncion
+Escribir "Ej10 potencia:", ver_pot10()
+
+///////////////////////////////////////////////////////////////////////
+FinAlgoritmo
