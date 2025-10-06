@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reservación simple - JS muy simple</title>
+  <style>
+    body { font-family: Arial; padding:20px; max-width:700px; margin:auto; }
+    label { display:block; margin:8px 0; }
+    .actions { margin-top:12px; }
+    .msg { margin-left:8px; color:green; }
+    .err { color: red; margin-left:8px; }
+    pre { background:#f7f7f7; padding:8px; border-radius:4px; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Reservación - Hotel </h1>
+
+  <form id="bookingForm" onsubmit="return false;">
+    <label>Tipo de reserva
+      <select id="type">
+        <option value="hotel">Hotel</option>
+        <option value="travel">Viaje</option>
+      </select>
+    </label>
+
+    <label>Nombre del titular
+      <input id="guestName" type="text" placeholder="Nombre" required>
+    </label>
+
+    <label>Fecha
+      <input id="date" type="date" required>
+    </label>
+
+    <div class="conds">
+      <small>Condiciones (cada una suma un %)</small>
+      <label><input id="c1" type="checkbox" onchange="calcRisk()"> Diabetes (25)</label>
+      <label><input id="c2" type="checkbox" onchange="calcRisk()"> Asma (20)</label>
+      <label><input id="c3" type="checkbox" onchange="calcRisk()"> Cardiovascular (35)</label>
+      <label><input id="c4" type="checkbox" onchange="calcRisk()"> Hipertensión (30)</label>
+      <label><input id="c5" type="checkbox" onchange="calcRisk()"> Ninguna (0)</label>
+    </div>
+
+    <div class="risk">
+      Score de riesgo: <strong id="risk">0%</strong>
+    </div>
+
+    <div class="actions">
+      <button id="bookBtn" type="button" onclick="saveBooking()">Guardar reservación</button>
+      <button id="clearBooking" type="button" onclick="clearForm()">Limpiar</button>
+      <button id="showBtn" type="button" onclick="showSaved()">Ver datos guardados</button>
+      <span id="bookingMsg" class="msg"></span>
+      <span id="bookingErr" class="err"></span>
+    </div>
+  </form>
+
+  <div id="savedInfo" style="margin-top:16px"></div>
+
+  <script>
+    // calcula riesgo con if simples
+    function calcRisk() {
+      var sum = 0;
+      if (document.getElementById('c1').checked) { sum = sum + 25; }
+      if (document.getElementById('c2').checked) { sum = sum + 20; }
+      if (document.getElementById('c3').checked) { sum = sum + 35; }
+      if (document.getElementById('c4').checked) { sum = sum + 30; }
+      if (document.getElementById('c5').checked) { sum = sum + 0; }
+      if (sum > 100) { sum = 100; }
+      document.getElementById('risk').innerText = sum + '%';
+      return sum;
+    }
+
+    // guarda en localStorage como una sola cadena: tipo|nombre|fecha|riesgo
+    function saveBooking() {
+      document.getElementById('bookingErr').innerText = '';
+      document.getElementById('bookingMsg').innerText = '';
+
+      var risk = calcRisk();
+
+      if (risk >= 60) {
+        document.getElementById('bookingErr').innerText = 'No se puede reservar: riesgo igual o superior al 60%';
+      } else {
+        var tipo = document.getElementById('type').value;
+        var nombre = document.getElementById('guestName').value;
+        var fecha = document.getElementById('date').value;
+        var cadena = tipo + '|' + nombre + '|' + fecha + '|' + risk;
+        localStorage.setItem('booking', cadena);
+        document.getElementById('bookingMsg').innerText = 'Reservación guardada ✅';
+      }
+    }
+
+    // limpia el formulario (no borra lo guardado)
+    function clearForm() {
+      document.getElementById('type').selectedIndex = 0;
+      document.getElementById('guestName').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('c1').checked = false;
+      document.getElementById('c2').checked = false;
+      document.getElementById('c3').checked = false;
+      document.getElementById('c4').checked = false;
+      document.getElementById('c5').checked = false;
+      calcRisk();
+      document.getElementById('savedInfo').innerHTML = '';
+      document.getElementById('bookingErr').innerText = '';
+      document.getElementById('bookingMsg').innerText = '';
+    }
+
+    // muestra los datos solo cuando se presiona el botón
+    function showSaved() {
+      var raw = localStorage.getItem('booking');
+      if (!raw) {
+        document.getElementById('savedInfo').innerHTML = '<div>No hay reservación guardada</div>';
+      } else {
+        var parts = raw.split('|');
+        var tipo = parts[0] || '-';
+        var nombre = parts[1] || '-';
+        var fecha = parts[2] || '-';
+        var riesgo = parts[3] || '0';
+        var html = '<strong>Reservación guardada:</strong><pre>' +
+                   'Tipo: ' + tipo + '\n' +
+                   'Titular: ' + nombre + '\n' +
+                   'Fecha: ' + fecha + '\n' +
+                   'Riesgo: ' + riesgo + '%' +
+                   '</pre>';
+        document.getElementById('savedInfo').innerHTML = html;
+      }
+    }
+
+    // al cargar: no mostrar nada y dejar riesgo en 0
+    document.getElementById('savedInfo').innerHTML = '';
+    calcRisk();
+  </script>
+</body>
+</html>
